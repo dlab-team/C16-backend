@@ -1,0 +1,17 @@
+{
+  "name": "c16-backend",
+  "version": "1.0.0",
+  "description": "Backend proyecto C16-Ronda",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "C16-Backend",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2"
+  }
+}
