@@ -8,15 +8,32 @@ exports.getAllResources = async (req, res) => {
       whereClause.type = req.query.type;
     }
 
-    const resources = await Resource.findAll({ where: whereClause });
+    const page = parseInt(req.query.page) || 1; // Default page is 1
+    const limit = parseInt(req.query.limit) || 10; // Default limit is 10
+    const offset = (page - 1) * limit;
 
-    if (resources.length === 0) {
-      res
+    const { count, rows } = await Resource.findAndCountAll({
+      where: whereClause,
+      offset,
+      limit,
+    });
+
+    if (count === 0 && req.query.type) {
+      return res
         .status(404)
         .json({ message: `No resources with type=${req.query.type} found` });
-    } else {
-      res.json(resources);
     }
+
+    const totalPages = Math.ceil(count / limit);
+
+    res.json({
+      data: rows,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems: count,
+      },
+    });
   } catch (error) {
     console.error("Error retrieving resources:", error);
     res.status(500).json({ error: "Internal server error" });
