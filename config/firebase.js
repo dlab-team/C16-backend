@@ -1,3 +1,4 @@
+require("dotenv").config();
 const firebaseAdmin = require("firebase-admin");
 const { getAuth } = require("firebase-admin/auth");
 
