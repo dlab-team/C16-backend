@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const resourcesRouter = require("./routes/resources");
+const mailRouter = require("./routes/mail");
 const { sequelize } = require("./config/database");
 
 /*TODO: 
@@ -13,6 +14,7 @@ const { sequelize } = require("./config/database");
 app.use(express.json());
 
 app.use("/api", resourcesRouter);
+app.use("/api", mailRouter);
 
 app.get("/", (req, res) => {
   res.send(
