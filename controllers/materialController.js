@@ -1,4 +1,4 @@
-const Materials = require("../models/Material");
+const Material = require("../models/material");
 const { Op } = require("sequelize");
 const {
   getPagination,
@@ -18,7 +18,7 @@ exports.getAllMaterials = async (req, res) => {
   const { currentPage, pageSize, offset } = getPagination(page, size);
 
   try {
-    const { count, rows } = await Materials.findAndCountAll({
+    const { count, rows } = await Material.findAndCountAll({
       where: condition,
       offset,
       limit: pageSize,
@@ -42,7 +42,7 @@ exports.getAllMaterials = async (req, res) => {
 //GET /api/materials/:id
 exports.getMaterialsById = async (req, res) => {
   try {
-    const video = await Materials.findByPk(req.params.id);
+    const video = await Material.findByPk(req.params.id);
 
     if (video) {
       res.json(video);
@@ -63,7 +63,7 @@ exports.createMaterials = async (req, res) => {
     const { publisher, title, description, videoURL, image, duration } =
       req.body;
 
-    const newVideo = await Materials.create({
+    const newVideo = await Material.create({
       publisher,
       title,
       description,
@@ -85,7 +85,7 @@ exports.updateMaterials = async (req, res) => {
     const { publisher, title, description, videoURL, image, duration } =
       req.body;
 
-    const numAffectedRows = await Materials.update(
+    const numAffectedRows = await Material.update(
       {
         publisher,
         title,
@@ -100,7 +100,7 @@ exports.updateMaterials = async (req, res) => {
     );
 
     if (numAffectedRows[0] > 0) {
-      const updatedVideo = await Materials.findByPk(req.params.id);
+      const updatedVideo = await Material.findByPk(req.params.id);
       res.json(updatedVideo);
     } else {
       res
@@ -116,7 +116,7 @@ exports.updateMaterials = async (req, res) => {
 //DELETE /api/materials/:id
 exports.deleteMaterials = async (req, res) => {
   try {
-    const numDeleted = await Materials.destroy({
+    const numDeleted = await Material.destroy({
       where: { id: req.params.id },
     });
 
