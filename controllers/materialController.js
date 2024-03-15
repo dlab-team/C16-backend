@@ -1,21 +1,11 @@
 const Materials = require("../models/Material");
 const { Op } = require("sequelize");
+const {
+  getPagination,
+  getPaginationData,
+} = require("../utils/paginationHelper");
 
 //HELPERS FOR PAGINATION AND SEARCH BY TITLE
-const getPagination = (page, size) => {
-  const limit = size ? +size : 4;
-  const offset = page ? page * limit : 0;
-
-  return { limit, offset };
-};
-
-const getPagingData = (data, page, limit) => {
-  const { count: totalItems, rows: videos } = data;
-  const currentPage = page ? +page : 0;
-  const totalPages = Math.ceil(totalItems / limit);
-
-  return { totalItems, videos, totalPages, currentPage };
-};
 
 //GET /api/materials
 //    /api/materials //return default size 4 videos
@@ -23,28 +13,31 @@ const getPagingData = (data, page, limit) => {
 //    /api/materials?page=page-number //return specific page
 
 exports.getAllMaterials = async (req, res) => {
-  const {  page, size, title } = req.query;
-  const condition = title ? { title: { [Op.iLike]: `%${title}` } } : null;
-  const { limit, offset } = getPagination(page, size);
+  const { page, size, title } = req.query;
+  const condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
+  const { currentPage, pageSize, offset } = getPagination(page, size);
+
   try {
-    const data = await Materials.findAndCountAll({ 
-        where: condition, 
-        limit, 
-        offset
-      });
-    const response = getPagingData(data, page, limit)
-    if(response) {
-      res.json(response);
-    } else {
-      res
+    const { count, rows } = await Materials.findAndCountAll({
+      where: condition,
+      offset,
+      limit: pageSize,
+    });
+
+    const response = getPaginationData({ count, rows }, currentPage, pageSize);
+
+    if (response.data.length === 0 && title) {
+      return res
         .status(404)
-        .json({message: "No videos were found"});
+        .json({ message: `No materials with title=${title} found` });
     }
+
+    res.json(response);
   } catch (error) {
-    console.error("Error retrieving videos: ", error);
-    res.status(500).json({ error: "Internal server error" })
+    console.error("Error retrieving materials:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
-}      
+};
 
 //GET /api/materials/:id
 exports.getMaterialsById = async (req, res) => {
@@ -62,12 +55,13 @@ exports.getMaterialsById = async (req, res) => {
     console.error("Error retrieving video: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
+};
 
 //POST /api/materials
 exports.createMaterials = async (req, res) => {
   try {
-    const { publisher, title, description, videoURL, image, duration } = req.body;
+    const { publisher, title, description, videoURL, image, duration } =
+      req.body;
 
     const newVideo = await Materials.create({
       publisher,
@@ -75,7 +69,7 @@ exports.createMaterials = async (req, res) => {
       description,
       videoURL,
       image,
-      duration
+      duration,
     });
 
     res.status(201).json(newVideo);
@@ -88,7 +82,8 @@ exports.createMaterials = async (req, res) => {
 //PUT /api/materials/:id
 exports.updateMaterials = async (req, res) => {
   try {
-    const { publisher, title, description, videoURL, image, duration} = req.body;
+    const { publisher, title, description, videoURL, image, duration } =
+      req.body;
 
     const numAffectedRows = await Materials.update(
       {
@@ -97,15 +92,15 @@ exports.updateMaterials = async (req, res) => {
         description,
         videoURL,
         image,
-        duration
+        duration,
       },
       {
-        where: { id: req.params.id }
+        where: { id: req.params.id },
       }
     );
 
     if (numAffectedRows[0] > 0) {
-      const updatedVideo = await  Materials.findByPk(req.params.id);
+      const updatedVideo = await Materials.findByPk(req.params.id);
       res.json(updatedVideo);
     } else {
       res
@@ -116,7 +111,7 @@ exports.updateMaterials = async (req, res) => {
     console.error("Error retrieving video:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
+};
 
 //DELETE /api/materials/:id
 exports.deleteMaterials = async (req, res) => {
@@ -124,16 +119,16 @@ exports.deleteMaterials = async (req, res) => {
     const numDeleted = await Materials.destroy({
       where: { id: req.params.id },
     });
-    
+
     if (numDeleted) {
       res.status(204).json({ message: "Video deleted successfully" });
     } else {
       res
         .status(404)
         .json({ message: `Video with id=${req.params.id} not found` });
-    } 
+    }
   } catch (error) {
     console.error("Error deleting Video:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
+};
