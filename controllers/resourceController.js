@@ -1,4 +1,8 @@
 const Resource = require("../models/Resource");
+const {
+  getPagination,
+  getPaginationData,
+} = require("../utils/paginationHelper");
 
 // GET /api/resources
 exports.getAllResources = async (req, res) => {
@@ -8,15 +12,18 @@ exports.getAllResources = async (req, res) => {
       whereClause.type = req.query.type;
     }
 
-    const page = parseInt(req.query.page) || 1; // Default page is 1
-    const limit = parseInt(req.query.limit) || 10; // Default limit is 10
-    const offset = (page - 1) * limit;
+    const { currentPage, pageSize, offset } = getPagination(
+      req.query.page,
+      req.query.limit
+    );
 
     const { count, rows } = await Resource.findAndCountAll({
       where: whereClause,
       offset,
-      limit,
+      limit: pageSize,
     });
+
+    const response = getPaginationData({ count, rows }, currentPage, pageSize);
 
     if (count === 0 && req.query.type) {
       return res
@@ -24,16 +31,7 @@ exports.getAllResources = async (req, res) => {
         .json({ message: `No resources with type=${req.query.type} found` });
     }
 
-    const totalPages = Math.ceil(count / limit);
-
-    res.json({
-      data: rows,
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalItems: count,
-      },
-    });
+    res.json(response);
   } catch (error) {
     console.error("Error retrieving resources:", error);
     res.status(500).json({ error: "Internal server error" });
