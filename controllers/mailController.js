@@ -3,10 +3,10 @@ require("dotenv").config();
 
 exports.sendNewUserEmail = async (req, res) => {
     try {
-      const { to } = req.body;
+      const { emailTo } = req.body;
       const mailOptions = {
         from: process.env.EMAIL_HOST,
-        to,
+        emailTo,
         subject: 'Bienvenido!',
         html:`
         <h1>Bienvenido/a</h1>
