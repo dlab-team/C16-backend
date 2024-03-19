@@ -3,11 +3,11 @@ const express = require("express");
 const cors = require("cors");
 const PORT = process.env.PORT || 3000;
 const resourcesRouter = require("./routes/resources");
-const mailRouter = require("./routes/mail");
+const mailRouter = require("./routes/mails");
 const postsRouter = require("./routes/posts");
 const commentsRouter = require("./routes/comments");
 const materialsRouter = require("./routes/materials");
-const userRouter = require("./routes/user");
+const userRouter = require("./routes/users");
 const { sequelize } = require("./config/database");
 
 /*TODO: 

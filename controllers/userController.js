@@ -103,3 +103,23 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+exports.updateUser = async (req, res) => {
+  try {
+    const numUpdated = await User.update(req.body, {
+      where: { id: req.params.userId },
+    });
+
+    if (numUpdated) {
+      const updatedUser = await User.findByPk(req.params.userId);
+      res.json(updatedUser);
+    } else {
+      res
+        .status(400)
+        .json({ message: `user with id: ${req.params.id} not found.` });
+    }
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
