@@ -7,9 +7,15 @@ const {
 
 //GET /api/users
 exports.getAllUsers = async (req, res) => {
+  
   try {
-    const { page, size, name } = getPagination(req.query.page, req.query.limit);
-    const condition = name ? { name: { [Op.iLike]: `%${name}%` } } : null;
+    const { page, size, name } = req.query;
+    const condition = name ? { 
+      [Op.or]: [
+        { firstname: { [Op.iLike]: `%${name}%` } },
+        { lastname: { [Op.iLike]: `%${name}%` } }
+      ] 
+    } : null;
 
     const { currentPage, pageSize, offset } = getPagination(page, size);
 
@@ -17,6 +23,7 @@ exports.getAllUsers = async (req, res) => {
       where: condition,
       offset,
       limit: pageSize,
+      attributes: { exclude: ["updatedAt"] },
     });
 
     const response = getPaginationData({ count, rows }, currentPage, pageSize);
