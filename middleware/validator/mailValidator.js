@@ -5,9 +5,9 @@ const { validateResult } = require("./validateResult");
 exports.validateNewUserEmail = [
   body("emailTo")
     .notEmpty()
-    .withMessage("No puede estar vacío")
+    .withMessage("Email no puede estar vacío")
     .isString()
-    .withMessage("Tiene que ser un string")
+    .withMessage("Email tiene que ser un string")
     .isEmail()
     .withMessage("Tiene que ser un email válido")
     .escape(),
