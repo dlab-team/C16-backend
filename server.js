@@ -7,6 +7,7 @@ const mailRouter = require("./routes/mail");
 const postsRouter = require("./routes/posts");
 const commentsRouter = require("./routes/comments");
 const materialsRouter = require("./routes/materials");
+const userRouter = require("./routes/user");
 const { sequelize } = require("./config/database");
 
 /*TODO: 
@@ -21,6 +22,7 @@ app.use("/api", mailRouter);
 app.use("/api", postsRouter);
 app.use("/api", commentsRouter);
 app.use("/api", materialsRouter);
+app.use("/api", userRouter);
 
 app.get("/", (req, res) => {
   const baseUrl = req.protocol + "://" + req.get("host");
@@ -28,6 +30,7 @@ app.get("/", (req, res) => {
     resources: baseUrl + "/api/resources",
     posts: baseUrl + "/api/posts",
     materials: baseUrl + "/api/materials",
+    users:  baseUrl + "/api/users",
   });
 });
 
