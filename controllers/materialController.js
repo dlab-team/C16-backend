@@ -1,37 +1,30 @@
-const Material = require("../models/material");
+const { Material } = require("../models/index");
 const { Op } = require("sequelize");
 const {
   getPagination,
   getPaginationData,
 } = require("../utils/paginationHelper");
 
-//HELPERS FOR PAGINATION AND SEARCH BY TITLE
-
-//GET /api/materials
-//    /api/materials //return default size 4 videos
-//    /api/materials?title=some-video-title //return video by title
-//    /api/materials?page=page-number //return specific page
-
+// GET /api/materials
+// /api/materials //return default size 4 materials
+// /api/materials?title=some-material-title //return material by title
+// /api/materials?page=page-number //return specific page
 exports.getAllMaterials = async (req, res) => {
   const { page, size, title } = req.query;
   const condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
   const { currentPage, pageSize, offset } = getPagination(page, size);
-
   try {
     const { count, rows } = await Material.findAndCountAll({
       where: condition,
       offset,
       limit: pageSize,
     });
-
     const response = getPaginationData({ count, rows }, currentPage, pageSize);
-
     if (response.data.length === 0 && title) {
       return res
         .status(404)
         .json({ message: `No materials with title=${title} found` });
     }
-
     res.json(response);
   } catch (error) {
     console.error("Error retrieving materials:", error);
@@ -39,96 +32,76 @@ exports.getAllMaterials = async (req, res) => {
   }
 };
 
-//GET /api/materials/:id
+// GET /api/materials/:id
 exports.getMaterialsById = async (req, res) => {
   try {
-    const video = await Material.findByPk(req.params.id);
-
-    if (video) {
-      res.json(video);
+    const material = await Material.findByPk(req.params.id);
+    if (material) {
+      res.json(material);
     } else {
       res
         .status(404)
-        .json({ message: `Resource with id=${req.params.id} not found` });
+        .json({ message: `Material with id=${req.params.id} not found` });
     }
   } catch (error) {
-    console.error("Error retrieving video: ", error);
+    console.error("Error retrieving material: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-//POST /api/materials
+// POST /api/materials
 exports.createMaterials = async (req, res) => {
   try {
-    const { publisher, title, description, videoURL, image, duration } =
-      req.body;
-
-    const newVideo = await Material.create({
-      publisher,
+    const { userId, title, description, materialURL, duration } = req.body;
+    const newMaterial = await Material.create({
+      userId,
       title,
       description,
-      videoURL,
-      image,
+      materialURL,
       duration,
     });
-
-    res.status(201).json(newVideo);
+    res.status(201).json(newMaterial);
   } catch (error) {
-    console.error("Error creating a new video:", error);
+    console.error("Error creating a new material:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-//PUT /api/materials/:id
+// PUT /api/materials/:id
 exports.updateMaterials = async (req, res) => {
   try {
-    const { publisher, title, description, videoURL, image, duration } =
-      req.body;
-
+    const { userId, title, description, materialURL, duration } = req.body;
     const numAffectedRows = await Material.update(
-      {
-        publisher,
-        title,
-        description,
-        videoURL,
-        image,
-        duration,
-      },
-      {
-        where: { id: req.params.id },
-      }
+      { userId, title, description, materialURL, duration },
+      { where: { id: req.params.id } }
     );
-
     if (numAffectedRows[0] > 0) {
-      const updatedVideo = await Material.findByPk(req.params.id);
-      res.json(updatedVideo);
+      const updatedMaterial = await Material.findByPk(req.params.id);
+      res.json(updatedMaterial);
     } else {
       res
         .status(404)
-        .json({ message: `Video with id: ${req.params.id} not found` });
+        .json({ message: `Material with id: ${req.params.id} not found` });
     }
   } catch (error) {
-    console.error("Error retrieving video:", error);
+    console.error("Error updating material:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-//DELETE /api/materials/:id
+// DELETE /api/materials/:id
 exports.deleteMaterials = async (req, res) => {
   try {
-    const numDeleted = await Material.destroy({
-      where: { id: req.params.id },
-    });
-
+    const numDeleted = await Material.destroy({ where: { id: req.params.id } });
     if (numDeleted) {
-      res.status(204).json({ message: "Video deleted successfully" });
+      res.status(204).json({ message: "Material deleted successfully" });
     } else {
       res
         .status(404)
-        .json({ message: `Video with id=${req.params.id} not found` });
+        .json({ message: `Material with id=${req.params.id} not found` });
     }
   } catch (error) {
-    console.error("Error deleting Video:", error);
+    console.error("Error deleting Material:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
