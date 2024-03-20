@@ -1,5 +1,7 @@
 require("dotenv").config();
 const express = require("express");
+const swaggerUI = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
 const cors = require("cors");
 const PORT = process.env.PORT || 3000;
 const resourcesRouter = require("./routes/resources");
@@ -17,6 +19,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use("/api/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 app.use("/api", resourcesRouter);
 app.use("/api", mailRouter);
 app.use("/api", postsRouter);
@@ -27,10 +30,11 @@ app.use("/api", userRouter);
 app.get("/", (req, res) => {
   const baseUrl = req.protocol + "://" + req.get("host");
   res.json({
+    documentation: baseUrl + "/api/docs",
     resources: baseUrl + "/api/resources",
     posts: baseUrl + "/api/posts",
     materials: baseUrl + "/api/materials",
-    users:  baseUrl + "/api/users",
+    users: baseUrl + "/api/users",
   });
 });
 
