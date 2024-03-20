@@ -1,4 +1,4 @@
-const Resource = require("../models/resource");
+const { Resource } = require("../models/index");
 const {
   getPagination,
   getPaginationData,
@@ -11,26 +11,21 @@ exports.getAllResources = async (req, res) => {
     if (req.query.type) {
       whereClause.type = req.query.type;
     }
-
     const { currentPage, pageSize, offset } = getPagination(
       req.query.page,
       req.query.limit
     );
-
     const { count, rows } = await Resource.findAndCountAll({
       where: whereClause,
       offset,
       limit: pageSize,
     });
-
     const response = getPaginationData({ count, rows }, currentPage, pageSize);
-
     if (count === 0 && req.query.type) {
       return res
         .status(404)
         .json({ message: `No resources with type=${req.query.type} found` });
     }
-
     res.json(response);
   } catch (error) {
     console.error("Error retrieving resources:", error);
@@ -42,7 +37,6 @@ exports.getAllResources = async (req, res) => {
 exports.getResourceById = async (req, res) => {
   try {
     const resource = await Resource.findByPk(req.params.id);
-
     if (resource) {
       res.json(resource);
     } else {
@@ -59,17 +53,15 @@ exports.getResourceById = async (req, res) => {
 // POST /api/resources
 exports.createResource = async (req, res) => {
   try {
-    const { author, title, content, image, type } = req.body;
-
+    const { userId, title, content, image, type } = req.body;
     // Create a new resource instance
     const newResource = await Resource.create({
-      author,
+      userId,
       title,
       content,
       image,
       type,
     });
-
     res.status(201).json(newResource);
   } catch (error) {
     console.error("Error creating resource:", error);
@@ -80,22 +72,12 @@ exports.createResource = async (req, res) => {
 // PUT /api/resources/:id
 exports.updateResource = async (req, res) => {
   try {
-    const { author, title, content, image, type } = req.body;
-
+    const { userId, title, content, image, type } = req.body;
     // Update the resource with the new values
     const numAffectedRows = await Resource.update(
-      {
-        author,
-        title,
-        content,
-        image,
-        type,
-      },
-      {
-        where: { id: req.params.id },
-      }
+      { userId, title, content, image, type },
+      { where: { id: req.params.id } }
     );
-
     if (numAffectedRows[0] > 0) {
       const updatedResource = await Resource.findByPk(req.params.id);
       res.json(updatedResource);
@@ -113,10 +95,7 @@ exports.updateResource = async (req, res) => {
 // DELETE /api/resources/:id
 exports.deleteResource = async (req, res) => {
   try {
-    const numDeleted = await Resource.destroy({
-      where: { id: req.params.id },
-    });
-
+    const numDeleted = await Resource.destroy({ where: { id: req.params.id } });
     if (numDeleted) {
       res.status(204).json({ message: "Resource deleted successfully" });
     } else {
