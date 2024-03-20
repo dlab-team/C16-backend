@@ -1,4 +1,4 @@
-const User = require("../models/user");
+const { User } = require("../models/index");
 const { Op } = require("sequelize");
 const {
   getPagination,
@@ -7,15 +7,16 @@ const {
 
 //GET /api/users
 exports.getAllUsers = async (req, res) => {
-  
   try {
     const { page, size, name } = req.query;
-    const condition = name ? { 
-      [Op.or]: [
-        { firstname: { [Op.iLike]: `%${name}%` } },
-        { lastname: { [Op.iLike]: `%${name}%` } }
-      ] 
-    } : null;
+    const condition = name
+      ? {
+          [Op.or]: [
+            { firstname: { [Op.iLike]: `%${name}%` } },
+            { lastname: { [Op.iLike]: `%${name}%` } },
+          ],
+        }
+      : null;
 
     const { currentPage, pageSize, offset } = getPagination(page, size);
 
@@ -122,4 +123,4 @@ exports.updateUser = async (req, res) => {
     console.error("Error updating user:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};

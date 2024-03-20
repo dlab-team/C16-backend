@@ -3,8 +3,8 @@ const { sequelize, Sequelize } = require("../config/database");
 const Resource = sequelize.define(
   "Resource",
   {
-    author: {
-      type: Sequelize.INTEGER,
+    userId: {
+      type: Sequelize.STRING,
       allowNull: false,
     },
     title: {
@@ -17,9 +17,11 @@ const Resource = sequelize.define(
     },
     image: {
       type: Sequelize.STRING,
+      allowNull: true,
     },
     type: {
       type: Sequelize.STRING,
+      allowNull: true,
     },
   },
   {

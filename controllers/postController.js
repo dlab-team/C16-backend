@@ -1,5 +1,4 @@
-const Post = require("../models/post");
-const Comment = require("../models/comment");
+const { Post, Comment } = require("../models/index");
 const {
   getPagination,
   getPaginationData,
@@ -13,8 +12,7 @@ exports.getAllPosts = async (req, res) => {
       req.query.page,
       req.query.limit
     );
-    const searchTerm = req.query.search || ""; // Get the search term from the query string
-
+    const searchTerm = req.query.search || "";
     const { count, rows } = await Post.findAndCountAll({
       include: [
         {
@@ -26,14 +24,20 @@ exports.getAllPosts = async (req, res) => {
       limit: pageSize,
       where: {
         [Op.or]: [
-          { title: { [Op.iLike]: `%${searchTerm}%` } },
-          { content: { [Op.iLike]: `%${searchTerm}%` } },
+          {
+            title: {
+              [Op.iLike]: `%${searchTerm}%`,
+            },
+          },
+          {
+            content: {
+              [Op.iLike]: `%${searchTerm}%`,
+            },
+          },
         ],
       },
     });
-
     const response = getPaginationData({ count, rows }, currentPage, pageSize);
-
     res.json(response);
   } catch (error) {
     console.error("Error retrieving posts:", error);
@@ -52,7 +56,6 @@ exports.getPostById = async (req, res) => {
         },
       ],
     });
-
     if (post) {
       res.json(post);
     } else {
@@ -69,8 +72,8 @@ exports.getPostById = async (req, res) => {
 // POST /api/posts
 exports.createPost = async (req, res) => {
   try {
-    const { title, content, image, author } = req.body;
-    const newPost = await Post.create({ title, content, image, author });
+    const { userId, title, content, image } = req.body;
+    const newPost = await Post.create({ userId, title, content, image });
     res.status(201).json(newPost);
   } catch (error) {
     console.error("Error creating post:", error);
@@ -81,19 +84,11 @@ exports.createPost = async (req, res) => {
 // PUT /api/posts/:id
 exports.updatePost = async (req, res) => {
   try {
-    const { title, content, image, author } = req.body;
+    const { userId, title, content, image } = req.body;
     const numAffectedRows = await Post.update(
-      {
-        title,
-        content,
-        image,
-        author,
-      },
-      {
-        where: { id: req.params.id },
-      }
+      { userId, title, content, image },
+      { where: { id: req.params.id } }
     );
-
     if (numAffectedRows[0] > 0) {
       const updatedPost = await Post.findByPk(req.params.id);
       res.json(updatedPost);
@@ -111,10 +106,7 @@ exports.updatePost = async (req, res) => {
 // DELETE /api/posts/:id
 exports.deletePost = async (req, res) => {
   try {
-    const numDeleted = await Post.destroy({
-      where: { id: req.params.id },
-    });
-
+    const numDeleted = await Post.destroy({ where: { id: req.params.id } });
     if (numDeleted) {
       res.status(204).json({ message: "Post deleted successfully" });
     } else {

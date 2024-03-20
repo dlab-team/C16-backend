@@ -1,8 +1,8 @@
 const { sequelize, Sequelize } = require("../config/database");
 
 const Material = sequelize.define("Material", {
-  publisher: {
-    type: Sequelize.INTEGER,
+  userId: {
+    type: Sequelize.STRING,
     allowNull: false,
   },
   title: {
