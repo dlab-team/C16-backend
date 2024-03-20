@@ -1,13 +1,11 @@
 const { sequelize, Sequelize } = require("../config/database");
-const Comment = require("./comment");
 
 const Post = sequelize.define(
   "Post",
   {
-    id: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+    userId: {
+      type: Sequelize.STRING,
+      allowNull: false,
     },
     title: {
       type: Sequelize.STRING,
@@ -21,10 +19,6 @@ const Post = sequelize.define(
       type: Sequelize.STRING,
       allowNull: true,
     },
-    author: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-    },
   },
   {
     timestamps: true,
@@ -32,11 +26,5 @@ const Post = sequelize.define(
     updatedAt: "updatedAt",
   }
 );
-
-Post.hasMany(Comment, {
-  as: "comments",
-  foreignKey: "postId",
-  onDelete: "CASCADE",
-});
 
 module.exports = Post;
