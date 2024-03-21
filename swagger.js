@@ -472,6 +472,39 @@ const options = {
             },
           },
         },
+
+        Role: {
+          type: "object",
+          properties: {
+            id: {
+              type: "string",
+            },
+            name: {
+              type: "string",
+            },
+          },
+          required: ["id", "name"],
+        },
+        RoleInput: {
+          type: "object",
+          properties: {
+            name: {
+              type: "string",
+            },
+          },
+          required: ["name"],
+        },
+        RolesResponse: {
+          type: "object",
+          properties: {
+            data: {
+              type: "array",
+              items: {
+                $ref: "#/components/schemas/Role",
+              },
+            },
+          },
+        },
         ErrorResponse: {
           type: "object",
           properties: {
@@ -480,6 +513,23 @@ const options = {
             },
           },
         },
+        MailInput: {
+          type: "object",
+          properties: {
+            email: {
+              type: "string",
+            },
+          },
+          required: ["email"],
+        },
+        MailResponse: {
+          type: "object",
+          properties: {
+            message: {
+              type: "string",
+            },
+          },
+        }
       }, //  ---
     },
   },
