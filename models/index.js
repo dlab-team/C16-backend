@@ -4,6 +4,7 @@ const Post = require("./post");
 const Comment = require("./comment");
 const Resource = require("./resource");
 const Material = require("./material");
+const Role = require("./role");
 
 // relationships
 Comment.belongsTo(User, { foreignKey: "userId" });
@@ -26,4 +27,5 @@ module.exports = {
   Comment,
   Resource,
   Material,
+  Role,
 };
