@@ -16,8 +16,6 @@ exports.validateNewUser = [
     .isEmail()
     .withMessage("Tiene que ser un email válido")
     .escape(),
-  body("firstname").optional({nullable: true}).notEmpty().withMessage("Nombre no puede estar vacío").isString().withMessage("Nombre tiene que ser una cadena de texto").escape(),
-  body("lastname").optional({nullable: true}).notEmpty().withMessage("Apellido no puede estar vacío").isString().withMessage("Apellido tiene que ser una cadena de texto").escape(),
   validateResult,
 ];
 

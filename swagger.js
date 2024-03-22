@@ -313,12 +313,6 @@ const options = {
             id: {
               type: "string",
             },
-            firstname: {
-              type: "string",
-            },
-            lastname: {
-              type: "string",
-            },
             email: {
               type: "string",
             },
