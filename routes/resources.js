@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const resourceController = require("../controllers/resourceController");
+const {
+  validateNewResource,
+} = require("../middleware/validator/resourceValidator");
 
 /**
  * @swagger
@@ -113,7 +116,12 @@ router.get("/resources/:id", resourceController.getResourceById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post("/resources", resourceController.createResource);
+
+router.post(
+  "/resources",
+  validateNewResource,
+  resourceController.createResource
+);
 
 /**
  * @swagger

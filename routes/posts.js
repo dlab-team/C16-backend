@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const postController = require("../controllers/postController");
+const { validateNewPost } = require("../middleware/validator/postValidator");
 
 /**
  * @swagger
@@ -20,7 +21,7 @@ const postController = require("../controllers/postController");
  *         name: search
  *         schema:
  *           type: string
- *         description: Search term to filter posts by title or content
+ *         description: Search term to filter posts
  *       - in: query
  *         name: page
  *         schema:
@@ -66,6 +67,14 @@ router.get("/posts", postController.getAllPosts);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Post'
+ *               properties:
+ *                 comments:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Comment'
+ *                     properties:
+ *                       user:
+ *                         $ref: '#/components/schemas/User'
  *       404:
  *         description: Post not found
  *         content:
@@ -107,7 +116,7 @@ router.get("/posts/:id", postController.getPostById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post("/posts", postController.createPost);
+router.post("/posts", validateNewPost, postController.createPost);
 
 /**
  * @swagger
