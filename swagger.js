@@ -94,9 +94,6 @@ const options = {
             userId: {
               type: "string",
             },
-            title: {
-              type: "string",
-            },
             content: {
               type: "string",
               maxLength: 2000,
@@ -119,15 +116,12 @@ const options = {
               format: "date-time",
             },
           },
-          required: ["userId", "title", "content"],
+          required: ["userId", "content"],
         },
         PostInput: {
           type: "object",
           properties: {
             userId: {
-              type: "string",
-            },
-            title: {
               type: "string",
             },
             content: {
@@ -138,7 +132,7 @@ const options = {
               type: "string",
             },
           },
-          required: ["userId", "title", "content"],
+          required: ["userId", "content"],
         },
         PostsResponse: {
           type: "object",
@@ -523,7 +517,7 @@ const options = {
               type: "string",
             },
           },
-        }
+        },
       }, //  ---
     },
   },

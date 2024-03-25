@@ -7,10 +7,6 @@ const Post = sequelize.define(
       type: Sequelize.STRING,
       allowNull: false,
     },
-    title: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
     content: {
       type: Sequelize.STRING(2000),
       allowNull: false,

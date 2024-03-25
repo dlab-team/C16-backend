@@ -1,4 +1,4 @@
-const { Post, Comment } = require("../models/index");
+const { Post, Comment, User } = require("../models/index");
 const {
   getPagination,
   getPaginationData,
@@ -16,26 +16,19 @@ exports.getAllPosts = async (req, res) => {
     const { count, rows } = await Post.findAndCountAll({
       include: [
         {
-          model: Comment,
-          as: "comments",
+          model: User, // Join User
+          attributes: ["firstname", "lastname", "photo", "region", "comuna"],
+          as: "user",
         },
       ],
       offset,
       limit: pageSize,
       where: {
-        [Op.or]: [
-          {
-            title: {
-              [Op.iLike]: `%${searchTerm}%`,
-            },
-          },
-          {
-            content: {
-              [Op.iLike]: `%${searchTerm}%`,
-            },
-          },
-        ],
+        content: {
+          [Op.iLike]: `%${searchTerm}%`,
+        },
       },
+      order: [["createdAt", "DESC"]], // sort by createdAt in descending order
     });
     const response = getPaginationData({ count, rows }, currentPage, pageSize);
     res.json(response);
@@ -51,8 +44,9 @@ exports.getPostById = async (req, res) => {
     const post = await Post.findByPk(req.params.id, {
       include: [
         {
-          model: Comment,
-          as: "comments",
+          model: User, // Join User model
+          attributes: ["firstname", "lastname", "photo", "region", "comuna"],
+          as: "user",
         },
       ],
     });
@@ -72,8 +66,8 @@ exports.getPostById = async (req, res) => {
 // POST /api/posts
 exports.createPost = async (req, res) => {
   try {
-    const { userId, title, content, image } = req.body;
-    const newPost = await Post.create({ userId, title, content, image });
+    const { userId, content, image } = req.body;
+    const newPost = await Post.create({ userId, content, image });
     res.status(201).json(newPost);
   } catch (error) {
     console.error("Error creating post:", error);
@@ -84,13 +78,21 @@ exports.createPost = async (req, res) => {
 // PUT /api/posts/:id
 exports.updatePost = async (req, res) => {
   try {
-    const { userId, title, content, image } = req.body;
+    const { userId, content, image } = req.body;
     const numAffectedRows = await Post.update(
-      { userId, title, content, image },
+      { userId, content, image },
       { where: { id: req.params.id } }
     );
     if (numAffectedRows[0] > 0) {
-      const updatedPost = await Post.findByPk(req.params.id);
+      const updatedPost = await Post.findByPk(req.params.id, {
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["firstname", "lastname", "photo", "region", "comuna"],
+          },
+        ],
+      });
       res.json(updatedPost);
     } else {
       res
