@@ -7,7 +7,7 @@ const Material = require("./material");
 const Role = require("./role");
 
 // relationships
-Comment.belongsTo(User, { foreignKey: "userId" });
+Comment.belongsTo(User, { foreignKey: "userId", as: "user" });
 Comment.belongsTo(Post, { foreignKey: "postId" });
 
 Post.hasMany(Comment, {
@@ -15,7 +15,7 @@ Post.hasMany(Comment, {
   foreignKey: "postId",
   onDelete: "CASCADE",
 });
-Post.belongsTo(User, { foreignKey: "userId" });
+Post.belongsTo(User, { foreignKey: "userId", as: "user" });
 
 Resource.belongsTo(User, { foreignKey: "userId" });
 
