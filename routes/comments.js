@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const commentController = require("../controllers/commentController");
+const {
+  validateNewComment,
+} = require("../middleware/validator/commentValidator");
 
 /**
  * @swagger
@@ -21,6 +24,16 @@ const commentController = require("../controllers/commentController");
  *         required: true
  *         schema:
  *           type: integer
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page for pagination
  *     responses:
  *       200:
  *         description: Successful response
@@ -83,7 +96,11 @@ router.get("/posts/:postId/comments", commentController.getCommentsByPostId);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post("/posts/:postId/comments", commentController.createComment);
+router.post(
+  "/posts/:postId/comments",
+  validateNewComment,
+  commentController.createComment
+);
 
 /**
  * @swagger

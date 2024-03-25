@@ -1,6 +1,9 @@
 const Router = require("express");
 const router = Router();
 const materialController = require("../controllers/materialController");
+const {
+  validateNewMaterial,
+} = require("../middleware/validator/materialValidator");
 
 /**
  * @swagger
@@ -113,7 +116,11 @@ router.get("/materials/:id", materialController.getMaterialsById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post("/materials", materialController.createMaterials);
+router.post(
+  "/materials",
+  validateNewMaterial,
+  materialController.createMaterials
+);
 
 /**
  * @swagger
