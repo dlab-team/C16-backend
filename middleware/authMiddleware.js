@@ -1,4 +1,3 @@
-
 const auth = require("../config/firebase");
 
 const validateFirebaseToken = async (req, res, next) => {
@@ -6,12 +5,18 @@ const validateFirebaseToken = async (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];
 
   if (!token) {
-    return res.status(401).json({ message: "No token provided" });
+    return res.status(401).json({ message: "No token provided" }); 
   }
 
   try {
     const decodedToken = await auth.verifyIdToken(token);
-    res.locals.user = decodedToken.uid;
+    
+    const userData = {
+      uid: decodedToken.uid,
+      email: decodedToken.email
+    };
+
+    res.locals.user = userData;
     next();
   } catch (error) {
     console.error("Error verifying Firebase token:", error);
