@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const userController = require("../controllers/userController");
+const authMiddleware = require("../middleware/authMiddleware");
 const {
   validateNewUser,
   validateFinishUser,
@@ -96,7 +97,7 @@ router.get("/users/:userId", userController.getUserById);
  *   post:
  *     summary: Create a new user
  *     tags: [Users]
- *     requestBody:
+ *     requestHeader:
  *       required: true
  *       content:
  *         application/json:
@@ -109,12 +110,19 @@ router.get("/users/:userId", userController.getUserById);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *       409:
- *         description: User already exists
+ *       203:
+ *         description: User exist but profile needs to be completed
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/User'
+ *       202:
+ *         description: User profile completed. Welcome!
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *
  *       500:
  *         description: Internal server error
  *         content:
@@ -122,7 +130,7 @@ router.get("/users/:userId", userController.getUserById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post("/users", validateNewUser, userController.createUser);
+router.post("/users", validateNewUser, authMiddleware, userController.createUser);
 
 /**
  * @swagger

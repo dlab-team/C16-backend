@@ -62,18 +62,23 @@ exports.getUserById = async (req, res) => {
 
 //POST /api/users
 exports.createUser = async (req, res) => {
+
   try {
     const existingUser = await User.findOne({
-      where: { email: req.body.email },
+      where: { email: res.locals.user.email },
     });
 
     if (existingUser) {
-      return res.status(409).json({ message: "User already exist" });
+      if(!existingUser.completed) {
+        return res.status(203).json({ message: "User exist but profile needs to be completed. "})
+      } else {
+        return res.status(202).json({ message: "User profile completed. Welcome!" });
+      }
     }
 
     const newUser = await User.create({
-      id: req.body.id,
-      email: req.body.email,
+      id: res.locals.user.uid,
+      email: res.locals.user.email
     });
 
     res.status(201).json(newUser);
