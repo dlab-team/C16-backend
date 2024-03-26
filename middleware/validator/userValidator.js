@@ -1,20 +1,12 @@
-const { body } = require("express-validator");
+const { body, header } = require("express-validator");
 const { validateResult } = require("./validateResult");
 
 exports.validateNewUser = [
-  body("id")
+  header("Authorization")
     .notEmpty()
-    .withMessage("ID no puede estar vacío")
+    .withMessage("Header es requerido!")
     .isString()
-    .withMessage("ID tiene que ser una cadena de texto")
-    .escape(),
-  body("email")
-    .notEmpty()
-    .withMessage("Email no puede estar vacío")
-    .isString()
-    .withMessage("Email tiene que ser una cadena de texto")
-    .isEmail()
-    .withMessage("Tiene que ser un email válido")
+    .withMessage("Header tiene que ser una cadena de texto")
     .escape(),
   validateResult,
 ];
