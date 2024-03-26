@@ -1,5 +1,7 @@
 const { sequelize, Sequelize } = require("../config/database");
 
+const defaultProfileImg = "https://firebasestorage.googleapis.com/v0/b/dropbox-clone-736fa.appspot.com/o/users%2Fuser_2aNC9F2HWDn5x5KjMBi9Y9ywEQX%2Ffiles%2Fdefaultprofile.png?alt=media"
+
 const User = sequelize.define(
   "User",
   {
@@ -54,12 +56,18 @@ const User = sequelize.define(
     photo: {
       type: Sequelize.STRING,
       allowNull: true,
+      defaultValue: defaultProfileImg
     },
     completed: {
       type: Sequelize.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
+    roleId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      defaultValue: 3,
+    }
   },
   {
     timestamps: true,

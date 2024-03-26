@@ -290,6 +290,9 @@ const options = {
             completed: {
               type: "boolean",
             },
+            roleId: {
+              type: "integer",
+            },
             createdAt: {
               type: "string",
               format: "date-time",
@@ -465,7 +468,7 @@ const options = {
           type: "object",
           properties: {
             id: {
-              type: "string",
+              type: "integer",
             },
             name: {
               type: "string",
