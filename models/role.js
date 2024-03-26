@@ -2,7 +2,7 @@ const { sequelize, Sequelize } = require("../config/database");
 
 const Role = sequelize.define(
   "Role",
-  {
+  { 
     name: {
       type: Sequelize.STRING,
       allowNull: false,
