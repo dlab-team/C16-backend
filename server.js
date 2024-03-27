@@ -19,15 +19,10 @@ const { sequelize } = require("./config/database");
 const app = express();
 app.use(express.json());
 
-const corsOptions = {
-  origin: 'https://localhost:5173',
-  optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-};
 
-app.use(cors(corsOptions));
+
+app.use(cors({ origin: true, credentials: true }));
+
 
 app.use("/api/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 app.use("/api", resourcesRouter);
