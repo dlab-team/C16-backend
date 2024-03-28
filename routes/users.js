@@ -4,6 +4,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const {
   validateNewUser,
   validateFinishUser,
+  validateNewAdmin,
 } = require("../middleware/validator/userValidator");
 
 /**
@@ -131,6 +132,55 @@ router.get("/users/:userId", userController.getUserById);
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post("/users", validateNewUser, authMiddleware, userController.createUser);
+
+
+/**
+ * @swagger
+ * /api/users/createAdmin:
+ *   post:
+ *     summary: Create a new Admin
+ *     tags: [Users]
+ *     requestHeader:
+ *       required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/NewUserInput'
+ *     responses:
+ *       201:
+ *         description: Admin created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       203:
+ *         description: User exist but profile needs to be completed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       202:
+ *         description: User profile completed. Welcome!
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       403:
+ *         description: User not authorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post("/users/createAdmin", validateNewAdmin, authMiddleware, userController.createAdmin);
 
 /**
  * @swagger
