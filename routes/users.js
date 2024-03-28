@@ -142,6 +142,8 @@ router.post("/users", validateNewUser, authMiddleware, userController.createUser
  *     tags: [Users]
  *     requestHeader:
  *       required: true
+ *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
