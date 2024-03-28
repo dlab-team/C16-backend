@@ -4,6 +4,9 @@ const {
   getPagination,
   getPaginationData,
 } = require("../utils/paginationHelper");
+const { sendEmail } = require('../config/mailerConfig');
+
+
 
 //GET /api/users
 exports.getAllUsers = async (req, res) => {
@@ -81,12 +84,82 @@ exports.createUser = async (req, res) => {
       email: res.locals.user.email
     });
 
+    const mailOptions = {
+      from: process.env.EMAIL_HOST,
+      to:res.locals.user.email,
+      subject: 'Bienvenido!',
+      html:`
+      <h1>Bienvenido/a</h1>
+      <p>¡Gracias por unirte a nuestra comunidad como Cuidador!</p>
+      <p>Esperamos que disfrutes de tu tiempo con nosotros.</p>
+      `
+    }
+
+    await sendEmail(mailOptions);
+    
     res.status(201).json(newUser);
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ error: "Unable to create user" });
   }
 };
+
+//POST /api/createAdmin
+exports.createAdmin = async (req, res) => {
+  try {
+    const isSuperAdmin = await User.findOne({
+      where:{
+        [Op.and]: [
+          { email: res.locals.user.email },
+          { roleId: 1 },
+        ]
+      },
+    })
+
+    if(isSuperAdmin) {
+      const existingUser = await User.findOne({
+        where: { email: req.body.email },
+      })
+  
+      if (existingUser) {
+        if(!existingUser.completed) {
+          return res.status(203).json({ message: "User exist but profile needs to be completed. "})
+        } else {
+          return res.status(202).json({ message: "User profile completed. Welcome!" });
+        }
+      }
+
+      const admin = await User.create({
+        id: req.body.id,
+        email: req.body.email,
+        roleId: 2,
+      })
+
+      const mailOptions = {
+        from: process.env.EMAIL_HOST,
+        to:req.body.email,
+        subject: 'Bienvenido!',
+        html:`
+        <h1>Bienvenido/a</h1>
+        <p>¡Gracias por unirte a nuestra comunidad como Administrador!</p>
+        <p>Esperamos que disfrutes de tu tiempo con nosotros.</p>
+        `
+      }
+
+      await sendEmail(mailOptions);
+
+      res.status(201).json(admin);
+
+    }else {
+      return res.status(403).json({ message: "Only super admins can create admins" });
+    }
+
+   
+  } catch (error) {
+    console.error("Error creating admin:", error);
+    res.status(500).json({ error: "Unable to create admin" });
+  }
+}
 
 //DELETE /api/users/:userId
 exports.deleteUser = async (req, res) => {
